@@ -1,17 +1,22 @@
 <template>
     <div id="wrap">
         <TheHeader/>
+
+        <TheFooter/>
     </div>
 </template>
 
 <script>
     //引入头部组件
     import TheHeader from '@/components/layouts/TheHeader'
+    //引入TheFooter.vue
+    import TheFooter from '@/components/layouts/TheFooter'
 
     export default {
         name: 'App',
         components:{
-            TheHeader
+            TheHeader,
+            TheFooter
         }
     }
 </script>
