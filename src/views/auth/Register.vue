@@ -1,6 +1,10 @@
 <template>
     <div class="row">
         <div class="col-md-4 col-md-offset-4 floating-box">
+
+            <!-- 消息组件-->
+            <Message :show.sync="msgShow" :type="msgType" :msg="msg" />
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">请注册</h3>
@@ -47,7 +51,11 @@
                 username:'',
                 password:'',
                 cpassword:'',
-                captcha:''
+                captcha:'',
+
+                msg:'',//消息
+                msgType:'',//消息类型
+                msgShow:false //是否显示消息 默认不显示
             }
         },
         created(){
@@ -75,7 +83,8 @@
             //注册基本逻辑
             submit() {
                 if( this.captcha.toUpperCase() !== this.localCaptcha){
-                    alert('验证码不正确')
+                    //alert('验证码不正确')
+                    this.showMsg('验证码不正确')
                     //重设验证码
                     this.getCaptcha()
                 }else{
@@ -94,7 +103,8 @@
                     if(localUser){
                         //检查是否重名
                         if(localUser.name === user.name) {
-                            alert('用户名已存在')
+                            //alert('用户名已存在')
+                            this.showMsg('用户名已存在')
                         }else{
                             this.login(user)
                         }
@@ -106,7 +116,19 @@
             login(user) {
                 //保存用户信息
                 ls.setItem('user',user)
-                alert('注册成功')
+
+                //alert('注册成功')
+                this.showMsg('注册成功','success')
+            },
+
+            showMsg(msg, type = 'warning') {
+                this.msg = msg
+                this.msgType = type
+                this.msgShow = false
+
+                this.$nextTick( ()=>{
+                    this.msgShow = true
+                })
             }
         }
     }

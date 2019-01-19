@@ -6,6 +6,8 @@ import App from './App'
 import router from './router'
 //引入全局验证指令  导入了 ./directives/index.js
 import './directives'
+//引入全局消息组件
+import './components'
 
 Vue.config.productionTip = false
 
