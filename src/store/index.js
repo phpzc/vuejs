@@ -6,8 +6,10 @@ import router from '../router'
 Vue.use(Vuex)
 
 const state = {
-    user: ls.getItem('user')
+    user: ls.getItem('user'),
 
+    //添加auth 来保存当前用户的登录状态
+    auth: ls.getItem('auth')
 }
 
 const mutations = {
@@ -16,6 +18,11 @@ const mutations = {
     UPDATE_USER(state, user) {
         state.user = user
         ls.setItem('user',user)
+    },
+
+    UPDATE_AUTH(state, auth) {
+        state.auth = auth
+        ls.setItem('auth',auth)
     }
 }
 
@@ -27,6 +34,9 @@ const actions = {
 
         // 登录时有传用户信息，就更新下用户信息
         if(user) commit('UPDATE_USER',user)
+
+        //更新用户的登录状态
+        commit('UPDATE_AUTH', true)
 
         //跳转首页
         router.push('/')
