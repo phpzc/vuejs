@@ -40,6 +40,12 @@ const actions = {
 
         //跳转首页
         router.push('/')
+    },
+
+    logout({ commit }){
+        commit('UPDATE_AUTH', false)
+
+        router.push({name:'Home', params: {logout: true} })
     }
 
     //写法2
@@ -79,6 +85,8 @@ const actions = {
 
 
      */
+
+
 
 
 }
