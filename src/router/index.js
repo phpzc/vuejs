@@ -1,33 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+//引入自定义路由数据数组文件
+import routes from './routes'
+
 Vue.use(Router)
-
-const routes = [
-    {
-        path:'/auth/register',
-        name:'Register',
-        //使用下面的方法指定组件，可以实现路由懒加载，
-        // 即当路由被访问时才加载对应的组件
-        component: () => import('@/views/auth/Register')
-    },
-
-    //首页路由配置
-    {
-        path:'/',
-        name:'Home',
-        component: () => import('@/views/Home')
-    },
-
-    //其他未配置的路由 都跳转到首页
-    {
-        path:'*',
-        //重定向
-        redirect:'/'
-    }
-
-
-]
 
 
 const router = new Router({
