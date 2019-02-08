@@ -16,6 +16,10 @@ import store from './store'
 import VueSweetalert2 from './plugins/vue-sweetalert2'
 Vue.use(VueSweetalert2)
 
+//引入message插件
+import Message from './plugins/message'
+Vue.use(Message)
+
 Vue.config.productionTip = false
 
 // eslint 配置，允许 new 一个实例后不赋值，我们没有使用 eslint，如果有，则下一行注释不可缺少

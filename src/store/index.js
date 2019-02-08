@@ -46,7 +46,7 @@ const actions = {
         commit('UPDATE_AUTH', false)
 
         router.push({name:'Home', params: {logout: true} })
-    }
+    },
 
     //写法2
     // login(context, user) {
@@ -88,7 +88,17 @@ const actions = {
 
 
 
+    //更新个人信息
+    updateUser( { state, commit} , user ) {
+        const stateUser = state.user
 
+        if( stateUser &&  typeof stateUser === 'object' ) {
+            user = { ...stateUser, ...user}
+
+        }
+
+        commit('UPDATE_USER',user)
+    }
 }
 
 const store = new Vuex.Store({
