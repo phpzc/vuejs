@@ -19,6 +19,8 @@ Vue.use(VueSweetalert2)
 //引入message插件
 import Message from './plugins/message'
 Vue.use(Message)
+//引入过滤器
+import './filters'
 
 Vue.config.productionTip = false
 

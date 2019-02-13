@@ -32,16 +32,38 @@ router.beforeEach((to,from,next) => {
     const auth = store.state.auth
     //const auth = router.app.$options.store.state.auth
 
+    //获取articleId
+    const articleId = to.params.articleId
+
     app.$message.hide()
 
     if (
         ( auth && to.path.indexOf('/auth/') !== -1) ||
-        (!auth && to.meta.auth)
+        (!auth && to.meta.auth) ||
+        //有articleId 且不能找到时 跳转首页
+        (articleId && !store.getters.getArticleById(articleId))
     ) {
         //如果当前用户已登录 且目标路由包含 /auth/，就跳转到首页
         next('/')
     }else{
         next()
+    }
+})
+
+//注册全局后置钩子
+router.afterEach( (to,from) => {
+    const app = router.app
+    const store = app.$options.store
+    const showMsg = to.params.showMsg
+
+    if(showMsg) {
+
+        if( typeof showMsg === 'string') {
+            app.$message.show(showMsg)
+        }else{
+            app.$message.show('操作成功')
+        }
+
     }
 })
 

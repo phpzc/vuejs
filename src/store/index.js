@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import ls from '../utils/localStorage'
 import router from '../router'
 
+import * as moreActinos from './actions'
+
 Vue.use(Vuex)
 
 const state = {
@@ -23,6 +25,11 @@ const mutations = {
     UPDATE_AUTH(state, auth) {
         state.auth = auth
         ls.setItem('auth',auth)
+    },
+
+    UPDATE_ARTICLES(state,articles) {
+        state.articles = articles
+        ls.setItem('articles',articles)
     }
 }
 
@@ -98,12 +105,30 @@ const actions = {
         }
 
         commit('UPDATE_USER',user)
+    },
+    ...moreActinos
+}
+
+const getters = {
+    getArticleById: (state) => (id) => {
+        let articles = state.articles
+
+        if(Array.isArray(articles)) {
+            articles = articles.filter( article => parseInt(id) === parseInt(article.articleId) )
+            return articles.length ? articles[0]:null
+        }else{
+            return null
+        }
     }
 }
+
 
 const store = new Vuex.Store({
     //共享的状态
     state,
+    //注册getters
+    getters,
+
     //更改 状态的方法 我们可以在这里更改状态，调用方法是像 store.commit('UPDATE_USER', user) 这样提交一个事件类型，这里不能包含异步操作；
     mutations,
 
