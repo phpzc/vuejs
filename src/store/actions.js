@@ -43,5 +43,14 @@ export const post = ( { commit, state}, {article,articleId}) => {
         //router.push({name:'Home', params:{articleId, showMsg:true}})
         router.push({name:'Content', params:{ articleId, showMsg:true}})
         
+    } else {
+        for( let article of articles) {
+            if(parseInt(article.articleId) === parseInt(articleId)) {
+                articles.splice(articles.indexOf(article), 1)
+                break
+            }
+        }
+        commit('UPDATE_ARTICLES',articles)
+        router.push({name:'Home',params:{ showMsg:true}})
     }
 }
