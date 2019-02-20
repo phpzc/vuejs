@@ -11,7 +11,10 @@ const state = {
     user: ls.getItem('user'),
 
     //添加auth 来保存当前用户的登录状态
-    auth: ls.getItem('auth')
+    auth: ls.getItem('auth'),
+
+    //
+    articles: ls.getItem('articles')
 }
 
 const mutations = {

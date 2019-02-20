@@ -54,3 +54,98 @@ export const post = ( { commit, state}, {article,articleId}) => {
         router.push({name:'Home',params:{ showMsg:true}})
     }
 }
+
+export const like = ( {commit, state}, { articleId, isAdd }) => {
+    let articles = state.articles
+    let likeUsers = []
+
+    const uid = 1
+
+    if(!Array.isArray(articles)) articles = []
+
+    for(let article of articles) {
+
+        if(parseInt(article.articleId) === parseInt(articleId)) {
+
+            //更新点赞用户列表
+            likeUsers = Array.isArray(article.likeUsers) ? article.likeUsers : likeUsers
+
+            if(isAdd) {
+                //是否已点赞
+                const isAdded = likeUsers.some( likeUser => parseInt(likeUser.uid) === uid ) //检测uid
+
+                if(!isAdded){
+                    likeUsers.push( {uid})
+                }
+            } else {
+                for (let likeUser of likeUsers) {
+                    if( parseInt(likeUser.uid) === uid ) {
+                        likeUsers.splice( likeUsers.indexOf(likeUser), 1)
+                        break
+                    }
+                }
+            }
+
+            //更新文章的点赞用户列表
+            article.likeUsers = likeUsers
+            break
+        }
+
+    }
+
+    commit('UPDATE_ARTICLES', articles)
+
+    return likeUsers
+}
+
+//articleId是文章id comment是评论内容 commentId是评论id
+export const comment = ({commit,state}, {articleId, comment, commentId}) => {
+    let articles = state.articles
+    let comments = []
+
+    if(!Array.isArray(articles)) articles=[]
+
+    for(let article of articles) {
+
+        if(parseInt(article.articleId) === parseInt(articleId)) {
+
+            //更新评论列表
+            comments = Array.isArray(article.comments) ? article.comments : comments
+
+            if(comment) {
+                //获取用户传入的评论内容设置用户id 默认为1
+                const { uid = 1, content } = comment
+                const date = new Date()
+
+                if( commentId === undefined) {
+                    const lastComment = comments[comments.length - 1]
+
+                    //新建commentId
+                    if(lastComment) {
+                        commentId = parseInt(lastComment.commentId) + 1
+
+                    }else{
+                        commentId = comments.length + 1
+                    }
+
+                    //在评论列表加入当前评论
+                    comments.push({
+                        uid,commentId,content,date
+                    })
+
+                }
+
+            }
+
+            //更新文章的评论列表
+            article.comments = comments
+            break
+        }
+    }
+
+    //提交UPDATE_ARTICLES 更新所有文章
+    commit('UPDATE_ARTICLES',articles)
+
+    //返回评论列表
+    return comments
+}

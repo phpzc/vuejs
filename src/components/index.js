@@ -1,5 +1,14 @@
 import Vue from 'vue'
 import Message from './Message'
+import Modal from './Modal'
 
-//注册全局消息组件
-Vue.component('Message',Message)
+
+const components = {
+    Message,
+    Modal
+}
+
+for(const [key, value] of Object.entries(components)) {
+    Vue.component(key,value)
+}
+
