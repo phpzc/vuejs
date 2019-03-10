@@ -62,6 +62,53 @@
 
         </Modal>
 
+        <!-- 评论列表 -->
+        <div class="replies panel panel-default list-panel replies-index">
+            <div class="panel-heading">
+                <div class="total">
+                    回复数量: <b>{{ comments.length }}</b>
+                </div>
+            </div>
+            <div class="panel-body">
+                <!--<ul id="reply-list" class="list-group row">-->
+                <transition-group id="reply-list" name="fade" tag="ul" class="list-group row">
+                    <li v-for="(comment,index) in comments" :key="comment.commentId" class="list-group-item media">
+                        <div class="avatar avatar-container pull-left">
+                            <router-link :to="`/${comment.uname}`">
+                                <img :src="comment.uavatar" class="media-object img-thumbnail avatar avatar-middle">
+                            </router-link>
+                        </div>
+
+                        <div class="infos">
+                            <div class="media-heading">
+                                <router-link :to="`/${comment.uname}`" class="remove-padding-left author rm-link-color">
+                                    {{ comment.uname }}
+                                </router-link>
+
+                                <div class="meta">
+                                    <a :id="`reply${index + 1}`" :href="`#reply${index + 1}`" class="anchor">#{{ index + 1 }}</a>
+                                    <span> ⋅ </span>
+                                    <abbr class="timeago">
+                                        {{ comment.date | moment('from', { startOf: 'second' })}}
+                                    </abbr>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="preview media-body markdown-reply markdown-body" v-html="comment.content">
+
+                        </div>
+                    </li>
+                </transition-group>
+                <!--</ul>-->
+
+                <div v-show="!comments.length" class="empty-block">
+                    暂无评论~~
+                </div>
+            </div>
+        </div>
+
         <!-- 评论框 -->
         <div id="reply-box" class="reply-box form box-block">
             <div class="form-group comment-editor">
@@ -100,6 +147,7 @@
                 likeClass:'',//点赞样式
                 showQrcode:false, //是否显示打赏弹窗
                 commentHtml:'',//评论 HTML
+                comments:[],//评论列表
             }
         },
         computed:{
@@ -113,7 +161,8 @@
             const article = this.$store.getters.getArticleById(articleId)
 
             if(article) {
-                let { uid,title, content,date, likeUsers } = article
+                //获取文章的comments
+                let { uid,title, content,date, likeUsers, comments } = article
 
                 this.uid = uid
                 this.title = title
@@ -124,6 +173,8 @@
                 this.likeUsers = likeUsers || []
                 this.likeClass = this.likeUsers.some( likeUser => parseInt(likeUser.uid) === 1) ? 'active' : ''
 
+                //渲染文章的comments
+                this.renderComments(comments)
 
                 this.$nextTick( ()=>{
                     this.$el.querySelectorAll('pre code').forEach( (el) => {
@@ -226,16 +277,48 @@
                     this.$store.dispatch('comment', {
                         comment: { content: this.commentMarkdown} ,
                         articleId: this.articleId,
-                    }). then( (comments) => {
-                        //打印返回的评论列表
-                        console.log(comments)
+                    }).then(this.renderComments) //渲染评论
+
+
+
+                    //清空编辑器
+                    this.simplemde.value('')
+                    //使得回复按钮获得焦点
+                    document.querySelector('#reply-btn').focus()
+
+                    //将最后的评论滚动到页面的 顶部
+                    this.$nextTick( ()=>{
+                        //页面效果 滚动到顶部
+                        const lastComment = document.querySelector('#reply-list li:last-child')
+                        if(lastComment)
+                            lastComment.scrollIntoView(true)
                     })
                 }
-            }
+            },
+            renderComments(comments) {
+                if(Array.isArray(comments)) {
+                    //深拷贝 comments 以不影响原数据
+                    const newComments = comments.map( comment => ( {...comment}))
+                    const user = this.user || {}
+
+                    for( let comment of newComments) {
+                        comment.uname = user.name
+                        comment.uavatar = user.avatar
+                        //评论内容从markdown转为html
+                        comment.content = SimpleMDE.prototype.markdown( emoji.emojify(comment.content, name => name ))
+
+                    }
+
+                    this.comments = newComments
+                    this.commentsMarkdown = comments
+
+                }
+            },
         }
     }
 </script>
 
 <style scoped>
-
+    .fade-enter-active, .fade-leave-active { transition: opacity .5s;}
+    .fade-enter, .fade-leave-to { opacity: 0;}
 </style>
