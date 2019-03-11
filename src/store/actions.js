@@ -133,8 +133,25 @@ export const comment = ({commit,state}, {articleId, comment, commentId}) => {
                         uid,commentId,content,date
                     })
 
+                } else { //编辑操作  commentId不为undefined时  修改操作  编辑时会传递一个commentId
+                    for(let comment of comments) {
+                        //找到对应的评论
+                        if(parseInt(comment.commentId) === parseInt(commentId)) {
+                            //更新评论内容
+                            comment.content = content
+                            break;
+                        }
+                    }
                 }
 
+            } else { //不存在评论内容时 删除评论
+                for(let comment of comments) {
+                    if(parseInt(comment.commentId) === parseInt(commentId)) {
+                        //删除这条评论
+                        comments.splice(comments.indexOf(comment), 1)
+                        break
+                    }
+                }
             }
 
             //更新文章的评论列表
