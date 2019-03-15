@@ -14,7 +14,7 @@
                         <!--<li><a href="/topics?filter=noreply">零回复</a></li>-->
 
                         <li v-for="item in filters">
-                            <router-link v-title="item.title" ::class="{ active: filter === item.filter }" :to="`/topics?filter=${item.filter}`">{{ item.name }}</router-link>
+                            <router-link v-title="item.title" :class="{ active: filter === item.filter }" :to="`/topics?filter=${item.filter}`">{{ item.name }}</router-link>
                         </li>
                     </ul>
                     <div class="clearfix"></div>
@@ -44,6 +44,12 @@
                     </ul>
                 </div>
 
+                <!---分页组件 -->
+
+                <div class="panel-footer text-right remove-padding-horizontal pager-footer">
+                    <Pagination :currentPage="currentPage" :total="total" :pageSize="pageSize" :onPageChange="changePage"/>
+                </div>
+
             </div>
         </div>
     </div>
@@ -52,10 +58,11 @@
 
 <script>
     import {mapState} from 'vuex'
+    import Pagination from "../components/Pagination";
 
     export default {
         name: "Home",
-
+        components: {Pagination},
         data() {
             return {
                 msg:'',
@@ -69,7 +76,9 @@
                     { filter: 'vote', name: '投票', title: '点赞数排序'},
                     { filter: 'recent', name: '最近', title: '发布时间排序'},
                     { filter: 'noreply', name: '零回复', title: '无人问津的话题'}
-                ]
+                ],
+                total:0,//文章总数
+                pageSize:5,//每页条数
             }
         },
         //组件内的路由导航守卫
@@ -117,6 +126,11 @@
             // articles () {
             //     return this.$store.getters.computedArticles
             // }
+
+            //当前页 从查询参数 page返回
+            currentPage() {
+                return parseInt( this.$route.query.page) || 1
+            }
         },
 
         watch: {
@@ -128,6 +142,7 @@
             },
             //监听 '$route' 在查询参数变化后 设置相关数据
             '$route'( to ) {
+
                 this.setDataByFilter(to.query.filter)
             }
 
@@ -140,9 +155,30 @@
             },
             //设置相关数据
             setDataByFilter( filter = 'default') {
+
+                //每页条数
+                const pageSize = this.pageSize
+                //当前页
+                const currentPage = this.currentPage
+                //过滤后的所有文章
+                const allArticles = this.$store.getters.getArticlesByFilter(filter)
+
+
                 this.filter = filter
-                this.articles = this.$store.getters.getArticlesByFilter(filter)
+                console.log('当前filter='+filter)
+                //文章总数
+                this.total = allArticles.length
+                //当前页的文章
+                this.articles = allArticles.slice(pageSize * (currentPage - 1), pageSize * currentPage )
+
+            },
+            //回调 组件的当前页改变时 调用
+            changePage(page) {
+                //再查询参数中 混入page 并跳转到该地址
+                //混入部分等价于 Object.assign({}, this.$route.query, { page: page })
+                this.$router.push( {query: { ...this.$route.query,page} })
             }
+
         }
 
     }
