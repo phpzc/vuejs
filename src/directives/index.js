@@ -2,6 +2,8 @@ import Vue from 'vue'
 import validator from './validator'
 import dropdown from './dropdown'
 
+import title from './title'
+
 //注册全局验证指令
 //Vue.directive('validator',validator)
 
@@ -10,7 +12,9 @@ const directives = {
     // 验证
     validator,
     // 下拉
-    dropdown
+    dropdown,
+    //
+    title,
 }
 
 //Object.entries 返回给定对象的键值对数组

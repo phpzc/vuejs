@@ -15,6 +15,21 @@ const router = new Router({
     //linkExactActiveClass 的值是一个类名，用来添加到与当前路由对应的 <router-link> 上，以显示当前精确激活的 <router-link>，其默认值是 'router-link-exact-active'，我们这里改为 'active' 以利用 Bootstrap 的激活样式。
     linkExactActiveClass:'active',
 
+    //指定滚动行为
+    scrollBehavior(to, from, savedPosition) {
+        if(to.hash){
+            //有锚点时 滚动到锚点
+            return {selector: to.hash}
+        }else if(savedPosition) {
+            //有保存位置时 滚动到保存的位置
+            return savedPosition
+        }else{
+            //默认滚动到页面顶部
+            return {x:0,y:0}
+        }
+    },
+
+
     //routes：具体的路由配置列表，用到的配置项说明：
     // path：路由的路径；
     // name：路由的名称；
@@ -34,6 +49,10 @@ router.beforeEach((to,from,next) => {
 
     //获取articleId
     const articleId = to.params.articleId
+    //当前用户
+    const user = store.state.user && store.state.user.name
+    //路由参数中的用户
+    const paramUser = to.params.user
 
     app.$message.hide()
 
@@ -41,7 +60,9 @@ router.beforeEach((to,from,next) => {
         ( auth && to.path.indexOf('/auth/') !== -1) ||
         (!auth && to.meta.auth) ||
         //有articleId 且不能找到时 跳转首页
-        (articleId && !store.getters.getArticleById(articleId))
+        (articleId && !store.getters.getArticleById(articleId)) ||
+        //路由参数中的用户不为当前用户，且找不到与其对应的文章时，跳转到首页    这里只是简单地通过文章的数量，来判断一个用户是否存在
+        (paramUser && paramUser !== user && !store.getters.getArticlesByUid(null, paramUser).length )
     ) {
         //如果当前用户已登录 且目标路由包含 /auth/，就跳转到首页
         next('/')
