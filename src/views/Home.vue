@@ -52,17 +52,25 @@
 
             </div>
         </div>
+
+        <!--侧栏-->
+        <TheSidebar/>
     </div>
 
 </template>
 
 <script>
     import {mapState} from 'vuex'
-    import Pagination from "../components/Pagination";
+    // import Pagination from "../components/Pagination";
+
+    import TheSidebar from '@/components/layouts/TheSidebar'
 
     export default {
         name: "Home",
-        components: {Pagination},
+        components: {
+            //Pagination
+            TheSidebar
+        },
         data() {
             return {
                 msg:'',
